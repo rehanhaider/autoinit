@@ -6,6 +6,9 @@ config_files=(
     ".gitignore"
     ".prettierrc"
     "config.json"
+    "Makefile"
+    "requirements.txt"
+    "ruff.toml"
 )
 
 copy_config_file() {

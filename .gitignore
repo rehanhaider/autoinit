@@ -1,0 +1,6 @@
+node_modules/
+__pycache__/
+
+# Remove dependencies - to be installed automatically
+package-lock.json
+package.json
