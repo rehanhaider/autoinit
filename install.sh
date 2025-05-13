@@ -2,10 +2,13 @@
 shopt -s expand_aliases
 
 ## Set the directories
-ROOT_DIR=$(pwd)
-SCRIPT_DIR="${ROOT_DIR}/autoinit/scripts"
-CONFIG_DIR="${ROOT_DIR}/autoinit/config"
-LIB_DIR="${ROOT_DIR}/autoinit/lib"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="${ROOT_DIR}/src/scripts"
+CONFIG_DIR="${ROOT_DIR}/src/config"
+LIB_DIR="${ROOT_DIR}/src/lib"
+
+## Set the target directory
+TARGET_DIR="$(pwd)"
 
 ## Set the default values
 SILENT_MODE=true
