@@ -14,7 +14,7 @@ config_files=(
 copy_config_file() {
     for file in "${config_files[@]}"; do
         # Check if the file exists in the CURRENT_DIR
-        if [ -f "${ROOT_DIR}/${file}" ]; then
+        if [ -f "${TARGET_DIR}/${file}" ]; then
             # If the file exists, ask the user if they want to overwrite it
             WARN "File ${file} already exists."
             WARN "Skipping overwrite of ${file}"
