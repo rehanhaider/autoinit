@@ -1,0 +1,4 @@
+-r src/fn/requirements.txt
+aws-lambda-powertools
+aws-lambda-powertools[tracer]
+boto3

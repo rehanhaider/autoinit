@@ -8,7 +8,7 @@ PROMPT "copy the files" "cp -r ${CONFIG_DIR}/aws ${TARGET_DIR}/aws"
 # --- Install the requirements ---
 init_cdk_project() {
     cd ${TARGET_DIR}/aws
-    source ${SCRIPT_DIR}/aws/npm-config.sh
+    RUN "Configuring npm project..." "source ${SCRIPT_DIR}/aws/npm-config.sh"
     cd ${TARGET_DIR}
 }
 
