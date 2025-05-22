@@ -4,7 +4,6 @@ import {
     aws_lambda as lambda,
     aws_ssm as ssm,
     RemovalPolicy,
-    Duration,
     aws_s3 as s3,
 } from "aws-cdk-lib";
 import { Construct } from "constructs";
@@ -44,14 +43,6 @@ export class CommonStack extends Stack {
             removalPolicy: RemovalPolicy.RETAIN,
         });
 
-        ////////////////////////////////////////////////////////////
-        // Processed Queue for holding processed news
-        ////////////////////////////////////////////////////////////
-
-        const processedQueue = new sqs.Queue(this, `${props.constants.APP_NAME}-ProcessedQueue`, {
-            queueName: `${props.constants.APP_NAME}-ProcessedQueue`,
-            visibilityTimeout: Duration.seconds(180),
-        });
 
         ////////////////////////////////////////////////////////////
         // Create SSM parameters
@@ -71,11 +62,13 @@ export class CommonStack extends Stack {
             description: `The ARN of the Common Layer for ${props.constants.APP_NAME}`,
         });
 
-        const processedQueueArnParameter = new ssm.StringParameter(this, `${props.constants.APP_NAME}-ProcessedQueueArn`, {
-            parameterName: props.params.PROCESSED_QUEUE_ARN,
-            stringValue: processedQueue.queueArn,
+        const cognitoUserPoolArnParameter = new ssm.StringParameter(this, `${props.constants.APP_NAME}-CognitoUserPoolArn`, {
+            parameterName: props.params.COGNITO_USER_POOL_ARN,
+            stringValue: props.userPool.userPoolArn,
             tier: ssm.ParameterTier.STANDARD,
-            description: `The ARN of the Processed Queue for ${props.constants.APP_NAME}`,
+            description: `The ARN of the Cognito User Pool for ${props.constants.APP_NAME}`,
         });
+
+
     }
 }

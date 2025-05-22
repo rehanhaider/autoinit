@@ -1,9 +1,14 @@
 #!/bin/bash
 
-## --- Create the web directory ---
-INFO "Creating the web directory"
-mkdir -p "${CURRENT_DIR}/web" || {
-    ERROR "Failed to create the web directory"
-    exit 1
+# --- Copy the files ---
+SILENT_MODE=$ORIGINAL_SILENT_MODE
+PROMPT "copy the files" "cp -r ${CONFIG_DIR}/web ${TARGET_DIR}/web"
+
+# --- Install the requirements ---
+init_web_project() {
+    cd ${TARGET_DIR}/web
+    RUN "Configuring npm project..." "source ${SCRIPT_DIR}/web/npm-config.sh"
+    cd ${TARGET_DIR}
 }
-PASS "Web directory created successfully"
+
+PROMPT "web project initialization" "init_web_project"
