@@ -10,7 +10,6 @@ const daisyui_config = {
 export default {
     content: {
         files: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}", "./lib/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
-        //extract, // extract fluid-tailwind
     },
     theme: {
         extend: {},
@@ -24,9 +23,6 @@ export default {
                     height: "2.5rem",
                     "min-height": "min-content",
                     "border-radius": "0.250rem",
-                },
-                main: {
-                    "overflow-wrap": "break-word",
                 },
             });
         },
