@@ -22,8 +22,7 @@ export default defineConfig({
             PUBLIC_USER_POOL_ID: envField.string({ context: "client", access: "public" }),
             PUBLIC_APP_CLIENT_ID: envField.string({ context: "client", access: "public" }),
             PUBLIC_BUCKET_NAME: envField.string({ context: "client", access: "public" }),
-            PUBLIC_RECAPATCHA_CLIENT_KEY: envField.string({ context: "client", access: "public" }),
-            PUBLIC_GOOGLE_ANALYTICS_ID: envField.string({ context: "client", access: "public" }),
+            PUBLIC_GOOGLE_ANALYTICS_ID: envField.string({ context: "client", access: "public", default: "" }),
         },
     },
     server: {
