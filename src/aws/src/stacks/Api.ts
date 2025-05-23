@@ -4,8 +4,10 @@ import {
     aws_lambda as lambda,
     aws_dynamodb as dynamodb,
     aws_logs as logs,
+    aws_cognito as cognito,
     aws_ssm as ssm,
     aws_certificatemanager as acm,
+    aws_ses as ses,
     RemovalPolicy,
     Size,
     Duration,
@@ -18,7 +20,6 @@ export interface ApiStackProps extends StackProps {
     constants: ConstantsType;
     params: ParamsType;
 }
-
 
 export interface ApiStackProps extends StackProps {
     constants: ConstantsType;
@@ -41,12 +42,15 @@ export class ApiStack extends Stack {
             parameterName: props.params.COMMON_LAYER_ARN,
         });
 
+        const userPoolArn = ssm.StringParameter.fromStringParameterAttributes(this, `${props.constants.APP_NAME}-UserPoolArn`, {
+            parameterName: props.params.USER_POOL_ARN,
+        });
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Certificate
+        // Cognito User Pool
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        const certificate = acm.Certificate.fromCertificateArn(this, `${props.constants.APP_NAME}-Certificate`, props.certificateArn);
-
+        const userPool = cognito.UserPool.fromUserPoolArn(this, `${props.constants.APP_NAME}-UserPool`, userPoolArn.stringValue);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // DynamoDB table
@@ -59,19 +63,29 @@ export class ApiStack extends Stack {
         });
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Email Identity
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        const emailIdentity = ses.EmailIdentity.fromEmailIdentityName(
+            this,
+            `${props.constants.APP_NAME}-EmailIdentity`,
+            `${props.constants.DOMAIN_NAME}`,
+        );
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Lambda handler
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         const commonLayer = lambda.LayerVersion.fromLayerVersionArn(
             this,
             `${props.constants.APP_NAME}-CommonLayer`,
-            commonLayerArn.stringValue
+            commonLayerArn.stringValue,
         );
 
         const powertoolsLayer = lambda.LayerVersion.fromLayerVersionArn(
             this,
             `${props.constants.APP_NAME}-PowertoolsLayer`,
-            props.constants.ARN_POWERTOOLS_LAYER
+            props.constants.ARN_POWERTOOLS_LAYER,
         );
 
         const apiFn = new lambda.Function(this, `${props.constants.APP_NAME}-ApiHandler`, {
@@ -99,11 +113,11 @@ export class ApiStack extends Stack {
         // Authorizer for the API Gateway
         const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, `${props.constants.APP_NAME}-Authorizer`, {
             authorizerName: `${props.constants.APP_NAME}-Authorizer`,
-            cognitoUserPools: [props.userPool],
+            cognitoUserPools: [userPool],
         });
 
         // Base API Gateway. @TODO Evaluate if this can be configured at API GW V2
-        const apiGw = new apigateway.RestApi(this, `${props.constants.APP_NAME}-Api`, {
+        const apiGateway = new apigateway.RestApi(this, `${props.constants.APP_NAME}-Api`, {
             restApiName: `${props.constants.APP_NAME}-Api`,
             deployOptions: {
                 stageName: "v1",
@@ -116,15 +130,61 @@ export class ApiStack extends Stack {
                 allowMethods: apigateway.Cors.ALL_METHODS,
                 allowHeaders: ["*", "Authorization"],
             },
-            domainName: {
-                domainName: `api.${props.hostedZone.zoneName}`,
-                certificate: certificate,
-                securityPolicy: apigateway.SecurityPolicy.TLS_1_2,
+        });
+
+        // Proxy Authenticated API
+        const proxyApi = apiGateway.root.addProxy({
+            defaultIntegration: new apigateway.LambdaIntegration(apiFn),
+            defaultMethodOptions: {
+                authorizationType: apigateway.AuthorizationType.COGNITO,
+                authorizer: authorizer,
+            },
+            defaultCorsPreflightOptions: {
+                allowOrigins: ["*"],
+                allowMethods: apigateway.Cors.ALL_METHODS,
+                allowHeaders: ["*", "Authorization"],
             },
         });
 
+        //////////////////////////////////////////
+        // API Definitions for Waitlist
+        //////////////////////////////////////////
 
+        // Waitlist Lambda
+        const waitlistLambda = new lambda.Function(this, `${props.constants.APP_NAME}-WaitlistLambda`, {
+            code: lambda.Code.fromAsset(join(__dirname, "fn/api")),
+            handler: "waitlist.handler",
+            runtime: lambda.Runtime.PYTHON_3_12,
+            environment: {
+                TABLE_NAME: tableName.stringValue,
+                DOMAIN_NAME: props.constants.DOMAIN_NAME,
+                EMAIL_IDENTITY_ARN: emailIdentity.emailIdentityArn,
+            },
+            layers: [commonLayer, powertoolsLayer],
+        });
 
+        // Grant permissions to the Waitlist Lambda
+        table.grantReadWriteData(waitlistLambda);
+        emailIdentity.grantSendEmail(waitlistLambda);
+        // Waitlist Resource
+        const waitlistResource = apiGateway.root.addResource("waitlist");
 
+        waitlistResource.addMethod("POST", new apigateway.LambdaIntegration(waitlistLambda), {
+            authorizationType: apigateway.AuthorizationType.NONE,
+            methodResponses: [
+                {
+                    statusCode: "200",
+                },
+            ],
+        });
+
+        waitlistResource.addMethod("GET", new apigateway.LambdaIntegration(waitlistLambda), {
+            authorizationType: apigateway.AuthorizationType.NONE,
+            methodResponses: [
+                {
+                    statusCode: "200",
+                },
+            ],
+        });
     }
 }
