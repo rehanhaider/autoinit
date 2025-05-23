@@ -32,7 +32,6 @@ export class CommonStack extends Stack {
             removalPolicy: RemovalPolicy.DESTROY,
         });
 
-
         ////////////////////////////////////////////////////////////
         // Common Layer for lambda functions
         ////////////////////////////////////////////////////////////
@@ -42,7 +41,6 @@ export class CommonStack extends Stack {
             code: lambda.Code.fromAsset(join(__dirname, "../../.layers/common")),
             removalPolicy: RemovalPolicy.RETAIN,
         });
-
 
         ////////////////////////////////////////////////////////////
         // Create SSM parameters
@@ -61,14 +59,5 @@ export class CommonStack extends Stack {
             tier: ssm.ParameterTier.STANDARD,
             description: `The ARN of the Common Layer for ${props.constants.APP_NAME}`,
         });
-
-        const cognitoUserPoolArnParameter = new ssm.StringParameter(this, `${props.constants.APP_NAME}-CognitoUserPoolArn`, {
-            parameterName: props.params.COGNITO_USER_POOL_ARN,
-            stringValue: props.userPool.userPoolArn,
-            tier: ssm.ParameterTier.STANDARD,
-            description: `The ARN of the Cognito User Pool for ${props.constants.APP_NAME}`,
-        });
-
-
     }
 }
