@@ -2,7 +2,7 @@
 
 # --- Copy the files ---
 SILENT_MODE=$ORIGINAL_SILENT_MODE
-PROMPT "copy the files" "cp -r ${CONFIG_DIR}/aws ${TARGET_DIR}/aws"
+PROMPT "copy the files" "cp -r ${MODULES_DIR}/aws ${TARGET_DIR}/aws"
 
 
 # --- Install the requirements ---

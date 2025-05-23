@@ -2,7 +2,7 @@
 
 # --- Copy the files ---
 SILENT_MODE=$ORIGINAL_SILENT_MODE
-PROMPT "copy the files" "cp -r ${CONFIG_DIR}/web ${TARGET_DIR}/web"
+PROMPT "copy the files" "cp -r ${MODULES_DIR}/web ${TARGET_DIR}/web"
 
 # --- Install the requirements ---
 init_web_project() {

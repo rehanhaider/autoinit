@@ -3,9 +3,9 @@ shopt -s expand_aliases
 
 ## Set the directories
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPT_DIR="${ROOT_DIR}/src/scripts"
-CONFIG_DIR="${ROOT_DIR}/src/config"
-LIB_DIR="${ROOT_DIR}/src/lib"
+SCRIPT_DIR="${ROOT_DIR}/scripts"
+MODULES_DIR="${ROOT_DIR}/src"
+LIB_DIR="${ROOT_DIR}/lib"
 
 ## Set the target directory
 TARGET_DIR="$(pwd)"

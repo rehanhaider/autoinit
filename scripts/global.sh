@@ -21,7 +21,7 @@ copy_config_file() {
             GLOBAL_ERROR=true
         else
             # If the file does not exist, copy it
-            RUN "Copied ${file} successfully" "cp ${CONFIG_DIR}/global/${file} ${TARGET_DIR}/${file}"
+            RUN "Copied ${file} successfully" "cp ${MODULES_DIR}/${file} ${TARGET_DIR}/${file}"
         fi
     done
 }
