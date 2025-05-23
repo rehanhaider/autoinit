@@ -1,11 +1,12 @@
-import config from "../config.json";
+import config from "../../config.json";
 
 ////////////////////////////////////////////////////////////
 // CONFIGURATION
 ////////////////////////////////////////////////////////////
 
 const APP_NAME = config.PROJECT_NAME.trim().replace(/ /g, "");
-const ARN_POWERTOOLS_LAYER = "arn:aws:lambda:us-east-1:017000801446:layer:AWSLambdaPowertoolsPythonV3-python312-x86_64:11";
+const ARN_POWERTOOLS_LAYER =
+    "arn:aws:lambda:us-east-1:017000801446:layer:AWSLambdaPowertoolsPythonV3-python312-x86_64:11";
 
 export const CONSTANTS = {
     APP_NAME,

@@ -1,8 +1,7 @@
 import { App } from "aws-cdk-lib";
-import { CommonStack } from "./src/Common";
+import { CommonStack } from "./stacks/Common";
 
 import { PARAMS, CONSTANTS } from "./constants";
-
 
 const app = new App();
 
@@ -13,7 +12,4 @@ new CommonStack(app, `${APP_NAME}-CommonStack`, {
     params: PARAMS,
 });
 
-
-
 app.synth();
-
