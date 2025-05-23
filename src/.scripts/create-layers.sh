@@ -7,7 +7,7 @@ LAYERS_DIR=.layers
 # Main requirements file
 MAIN_REQUIREMENTS_FILE=requirements.txt
 # Common requirements file
-COMMON_REQUIREMENTS_FILE=aws/src/requirements.txt
+COMMON_REQUIREMENTS_FILE=aws/requirements.txt
 COMMON_OUTPUT_DIR=${LAYERS_DIR}/common/python
 
 SHARED_LIB_CODE_DIR=aws/src/stacks/shared
