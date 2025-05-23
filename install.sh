@@ -14,7 +14,10 @@ TARGET_DIR="$(pwd)"
 SILENT_MODE=true
 ALL_MODULES=false
 
+
 source "${LIB_DIR}/macro.sh"
+
+
 # Set silent mode
 while getopts ":iah" opt; do
 	case ${opt} in
@@ -45,8 +48,6 @@ while getopts ":iah" opt; do
 	esac
 done
 
-
-
 # Starting the script
 if [ "$SILENT_MODE" = false ]; then
     INFO "Starting autoinit in interactive mode"
@@ -76,20 +77,24 @@ check_module_exists() {
 }
 
 
-
 ## Interactively ask the user if they want to install each module
 ORIGINAL_SILENT_MODE=$SILENT_MODE
-## Turn off silent mode for interactive mode
-if [ "$ALL_MODULES" = false ]; then
-	SILENT_MODE=false
-fi
+
 for module in "${MODULES[@]}"; do
+	SILENT_MODE=$ORIGINAL_SILENT_MODE
 	DELIM "Installation of ${module^^} module"
 	if check_module_exists "${module}"; then
 		WARN "Module ${module^^} already exists"
 		FAIL "Skipping installation of ${module^^} module"
 		continue
 	fi
+
+	if [ "$ALL_MODULES" = true ]; then
+		SILENT_MODE=true
+	else
+		SILENT_MODE=false
+	fi
 	PROMPT "creation of ${module^^} module" "source ${SCRIPT_DIR}/install_${module}.sh"
+	SILENT_MODE=$ORIGINAL_SILENT_MODE
 done
 

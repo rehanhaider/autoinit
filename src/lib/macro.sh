@@ -92,7 +92,7 @@ prompt_and_execute() {
     local question=$1
     local func=$2
 
-    if [ "$SILENT_MODE" = false ]; then
+    if [ "${SILENT_MODE}" = false ]; then
         # shellcheck disable=SC1091
         while true; do
             read -r -p "Proceed with $question [Y/n] " yn
