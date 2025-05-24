@@ -48,3 +48,14 @@ destroy:
 layers:
 	@echo ">>> Creating layers..."
 	./.scripts/create-layers.sh
+
+env-aws:
+	@echo ">>> Creating .env.web.local file..."
+	./.scripts/create-env-aws.sh
+	mise set
+
+env:
+	@echo ">>> Creating .env.*.local files..."
+	make env-cdk
+	make env-aws
+	mise set
