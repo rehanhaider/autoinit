@@ -73,3 +73,5 @@ if [ "$GLOBAL_ERROR" = true ]; then
 else
     PASS "Global config folders copied"
 fi
+
+mise trust
