@@ -17,7 +17,7 @@ fi
 
 # Get the project name from config.json file and remove all spaces
 PROJECT_NAME=$(cat config.json | jq -r '.PROJECT_NAME' | tr -d ' ')
-PROJECT_NAME=$(echo "CloudBytes Academy" | tr -d ' ')
+PROJECT_NAME=$(echo "SnapNews" | tr -d ' ')
 
 # Compute the MD5 hash of the project name
 BUCKET_NAME=$(echo -n $PROJECT_NAME | md5sum | cut -d ' ' -f 1)
