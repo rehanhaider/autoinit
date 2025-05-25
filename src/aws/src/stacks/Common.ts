@@ -1,11 +1,5 @@
 import { Stack, StackProps } from "aws-cdk-lib";
-import {
-    aws_dynamodb as dynamodb,
-    aws_lambda as lambda,
-    aws_ssm as ssm,
-    RemovalPolicy,
-    aws_s3 as s3,
-} from "aws-cdk-lib";
+import { aws_dynamodb as dynamodb, aws_lambda as lambda, aws_ssm as ssm, RemovalPolicy, aws_s3 as s3 } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { join } from "path";
 import { ConstantsType, ParamsType } from "../constants";
@@ -28,7 +22,6 @@ export class CommonStack extends Stack {
             partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
             sortKey: { name: "sk", type: dynamodb.AttributeType.STRING },
             billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-            timeToLiveAttribute: "ttl",
             removalPolicy: RemovalPolicy.DESTROY,
         });
 
@@ -38,7 +31,7 @@ export class CommonStack extends Stack {
 
         const commonLayer = new lambda.LayerVersion(this, `${props.constants.APP_NAME}-CommonLayer`, {
             compatibleRuntimes: [lambda.Runtime.PYTHON_3_12],
-            code: lambda.Code.fromAsset(join(__dirname, "../../.layers/common")),
+            code: lambda.Code.fromAsset(join(__dirname, "../../../.layers/common")),
             removalPolicy: RemovalPolicy.RETAIN,
         });
 

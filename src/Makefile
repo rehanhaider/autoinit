@@ -37,11 +37,11 @@ help:
 
 deploy:
 	@echo ">>> Deploying stack(s): [$(FULL_STACK_NAME)]"
-	cd backend && cdk deploy $(FULL_STACK_NAME) --require-approval never
+	cd aws && cdk deploy $(FULL_STACK_NAME) --require-approval never
 
 destroy:
 	@echo ">>> Destroying stack(s): [$(FULL_STACK_NAME)]"
-	cd backend && cdk destroy $(FULL_STACK_NAME) # Add --force if needed
+	cd aws && cdk destroy $(FULL_STACK_NAME) # Add --force if needed
 
 # --- Helper Scripts & Tasks ---
 

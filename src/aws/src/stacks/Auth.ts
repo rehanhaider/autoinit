@@ -50,6 +50,7 @@ export class AuthStack extends Stack {
                 fromName: FROM_NAME,
                 replyTo: REPLY_TO,
                 sesVerifiedDomain: props.constants.DOMAIN_NAME,
+                sesRegion: "us-east-1",
             }),
             // email: cognito.UserPoolEmail.withCognito(),
             userVerification: {
@@ -75,23 +76,38 @@ export class AuthStack extends Stack {
         // Cognito User Pool Client
         ////////////////////////////////////////////////////////////
 
-        const userPoolClient = new cognito.UserPoolClient(this, `${props.constants.APP_NAME}-UserPoolClient`, {
+        // authflow - default is userSrp, custom, and refreshToken
+
+        const userPoolClient = new cognito.UserPoolClient(this, `${props.constants.APP_NAME}-AppClient`, {
             userPool: userPool,
-            userPoolClientName: `${props.constants.APP_NAME}-UserPoolClient`,
+            userPoolClientName: `${props.constants.APP_NAME}-AppClient`,
+            generateSecret: false, // Auth handled at client side. For secure app, we need to enable this so that we can authenticate in server
             authFlows: {
-                adminUserPassword: true,
-                custom: true,
-                userPassword: true,
-                userSrp: true,
+                userSrp: true, // Includes refresh tokens. No need to define explicitly
+                custom: true, // In case we need to add any auth challenge for secure app
             },
-            generateSecret: false,
             oAuth: {
                 callbackUrls: [
-                    "http://localhost:3000/",
+                    "http://localhost:4321/",
                     `https://${props.constants.DOMAIN_NAME}`,
                     `https://www.${props.constants.DOMAIN_NAME}`,
                 ],
             },
+        });
+
+        ////////////////////////////////////////////////////////////
+        // Custom Domain
+        ////////////////////////////////////////////////////////////
+
+        // Customer domain not configured as it requries setting up a separate subdomain and associated pages. Rather using link & redirect URLs
+        userPool.addDomain(`${props.constants.APP_NAME}-UserPoolDomain`, {
+            cognitoDomain: {
+                domainPrefix: userPoolClient.userPoolClientId,
+            },
+            // customDomain: {
+            //     domainName: `auth.${props.domainName}`,
+            //     certificate: certificate,
+            // },
         });
     }
 }
