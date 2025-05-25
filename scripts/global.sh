@@ -23,12 +23,13 @@ config_folders=(
 
 copy_config_folder() {
     for folder in "${config_folders[@]}"; do
-        # Check if the folder exists in the CURRENT_DIR
+        # Check if the folder exists in the TARGET_DIR
         if [ -d "${TARGET_DIR}/${folder}" ]; then
-            # If the folder exists, ask the user if they want to overwrite it
+            # If the folder exists, warn and overwrite it
             WARN "Folder ${folder} already exists."
             WARN "Skipping overwrite of ${folder}"
-
+            GLOBAL_ERROR=true
+        else
             # If the folder does not exist, copy it
             RUN "Copied ${folder} successfully" "cp -r ${MODULES_DIR}/${folder} ${TARGET_DIR}/${folder}"
         fi
