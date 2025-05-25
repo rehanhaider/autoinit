@@ -56,6 +56,5 @@ env-aws:
 
 env:
 	@echo ">>> Creating .env.*.local files..."
-	make env-cdk
 	make env-aws
 	mise set
