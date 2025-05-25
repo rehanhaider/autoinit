@@ -58,3 +58,16 @@ env:
 	@echo ">>> Creating .env.*.local files..."
 	make env-aws
 	mise set
+
+
+# --- Init ---
+
+create-bucket:
+	@echo ">>> Creating bucket..."
+	./.scripts/create-bucket.sh
+
+
+
+init:
+	@echo ">>> Initializing project..."
+	make create-bucket
