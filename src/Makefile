@@ -10,6 +10,7 @@ else
 endif
 
 
+
 # --- Help Target ---
 help:
 	@echo "Usage: make [target] [VAR=value]"
@@ -67,11 +68,23 @@ create-bucket:
 	./.scripts/create-bucket.sh
 
 
-
 init:
 	@echo ">>> Initializing project..."
+	@echo ">>> Creating bucket..."
 	make create-bucket
-
+	@echo ">>> Deploying common stack..."
+	make deploy STACK=Common
+	@echo ">>> Setting app data..."
+	./.scripts/set-appdata.sh
+	@echo ">>> Deploying auth stack..."
+	make deploy STACK=Auth
+	@echo ">>> Deploying api stack..."
+	make deploy STACK=Api
+	@echo ">>> Create environment variables..."
+	make env
+	@echo ">>> Deploying host stack..."
+	make deploy STACK=Host
+	./.scripts/add-bucket-policy.sh
 
 # --- Web ---
 build:

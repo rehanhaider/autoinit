@@ -1,6 +1,16 @@
 import { Stack, StackProps, RemovalPolicy } from "aws-cdk-lib";
-import { aws_cognito as cognito, aws_certificatemanager as acm, aws_ssm as ssm } from "aws-cdk-lib";
+import {
+    aws_cognito as cognito,
+    aws_certificatemanager as acm,
+    aws_ssm as ssm,
+    aws_lambda as lambda,
+    aws_logs as logs,
+    aws_dynamodb as dynamodb,
+} from "aws-cdk-lib";
 import { Construct } from "constructs";
+
+import { join } from "path";
+
 import { ConstantsType, ParamsType } from "../constants";
 
 export interface AuthStackProps extends StackProps {
@@ -24,6 +34,47 @@ export class AuthStack extends Stack {
         ////////////////////////////////////////////////////////////
         // Cognito User Pool
         ////////////////////////////////////////////////////////////
+
+        const commonLayerArn = ssm.StringParameter.fromStringParameterAttributes(this, `${props.constants.APP_NAME}-CommonLayerArn`, {
+            parameterName: props.params.COMMON_LAYER_ARN,
+        });
+
+        const tableName = ssm.StringParameter.fromStringParameterAttributes(this, `${props.constants.APP_NAME}-TableName`, {
+            parameterName: props.params.TABLE_NAME,
+        });
+
+        const commonLayer = lambda.LayerVersion.fromLayerVersionArn(
+            this,
+            `${props.constants.APP_NAME}-CommonLayer`,
+            commonLayerArn.stringValue
+        );
+
+        const powertoolsLayer = lambda.LayerVersion.fromLayerVersionArn(
+            this,
+            `${props.constants.APP_NAME}-PowertoolsLayer`,
+            props.constants.ARN_POWERTOOLS_LAYER
+        );
+
+        const reCapatchaVerification = new lambda.Function(this, `${props.constants.APP_NAME}PreSignUpFunction`, {
+            runtime: lambda.Runtime.PYTHON_3_12,
+            handler: "pre_signup.trigger",
+            code: lambda.Code.fromAsset(join(__dirname, "fn/cognito")),
+            layers: [commonLayer, powertoolsLayer],
+            environment: {
+                PROJECT_NAME: props.constants.APP_NAME,
+                DOMAIN_NAME: props.constants.DOMAIN_NAME,
+                TABLE_NAME: tableName.stringValue,
+            },
+        });
+
+        const table = dynamodb.Table.fromTableName(this, `${props.constants.APP_NAME}-Table`, tableName.stringValue);
+        table.grantReadWriteData(reCapatchaVerification);
+
+        new logs.LogGroup(this, `${props.constants.APP_NAME}-PreSignUpFunctionLogGroup`, {
+            logGroupName: `/aws/lambda/${reCapatchaVerification.functionName}`,
+            removalPolicy: RemovalPolicy.DESTROY,
+        });
+
         const userPool = new cognito.UserPool(this, `${props.constants.APP_NAME}-UserPool`, {
             userPoolName: `${props.constants.APP_NAME}-UserPool`,
             signInAliases: { email: true },
@@ -57,6 +108,9 @@ export class AuthStack extends Stack {
                 emailSubject: EMAIL_SUBJECT,
                 emailBody: MESSAGE_STRING,
                 emailStyle: cognito.VerificationEmailStyle.LINK,
+            },
+            lambdaTriggers: {
+                preSignUp: reCapatchaVerification,
             },
             removalPolicy: RemovalPolicy.DESTROY,
         });

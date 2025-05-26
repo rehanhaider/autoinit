@@ -23,7 +23,7 @@ BUCKET_NAME=$(echo -n $PROJECT_NAME | md5sum | cut -d ' ' -f 1)
 
 
 # Get the AWS Cognito User Pool ID
-userPoolId=$(aws cognito-idp list-user-pools --max-results 50 --query "UserPools[?Name=='${PROJECT_NAME}Pool'].Id" --output text)
+userPoolId=$(aws cognito-idp list-user-pools --max-results 50 --query "UserPools[?Name=='${PROJECT_NAME}-UserPool'].Id" --output text)
 
 # Get the AWS Cognito User Pool Client ID
 appClientId=$(aws cognito-idp list-user-pool-clients --user-pool-id "$userPoolId" --query "UserPoolClients[*].[ClientId]" --output text)

@@ -7,7 +7,7 @@ BUCKET_NAME=$(echo -n $PROJECT_NAME | md5sum | cut -d ' ' -f 1)
 
 # Get cloudfront ARN using tags
 CLOUDFRONT_ARN=$(aws resourcegroupstaggingapi get-resources \
-  --tag-filters Key=Project,Values=MyProject \
+  --tag-filters Key=Project,Values=$PROJECT_NAME \
   --resource-type-filters cloudfront:distribution \
   --query 'ResourceTagMappingList[].ResourceARN' \
   --output text

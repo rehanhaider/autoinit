@@ -9,7 +9,6 @@ import {
     aws_iam as iam,
 } from "aws-cdk-lib";
 import { aws_route53 as route53, aws_route53_targets as route53Targets } from "aws-cdk-lib";
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from "aws-cdk-lib/custom-resources";
 
 import { ConstantsType, ParamsType } from "../constants";
 import { join } from "path";
@@ -74,27 +73,6 @@ export class HostStack extends Stack {
             certificate: certificate,
             domainNames: [`${props.constants.DOMAIN_NAME}`, `www.${props.constants.DOMAIN_NAME}`],
         });
-
-        // JSON bucket policy string
-        const bucketPolicy = {
-            Version: "2012-10-17",
-            Statement: [
-                {
-                    Sid: "AllowCloudFrontAccess",
-                    Effect: "Allow",
-                    Principal: {
-                        Service: "cloudfront.amazonaws.com",
-                    },
-                    Action: "s3:GetObject",
-                    Resource: `arn:aws:s3:::${bucket.bucketName}/*`,
-                    Condition: {
-                        StringEquals: {
-                            "AWS:SourceArn": cdnDistribution.distributionArn,
-                        },
-                    },
-                },
-            ],
-        };
 
         // Create the Route 53 records
         new route53.ARecord(this, `${props.constants.APP_NAME}-ARecord`, {

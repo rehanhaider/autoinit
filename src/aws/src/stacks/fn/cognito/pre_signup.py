@@ -35,7 +35,8 @@ def get_recaptcha_secret() -> str:
     Get the reCaptcha secret from the environment
     """
     response = table.get_item(Key={"pk": "APP#DATA", "sk": "SECRETS"})
-    return response.get("Item").get("RECAPATCHA_SECRET_KEY")
+    logger.info(f"Table response: {response}")
+    return response.get("Item").get("RECAPTCHA_SECRET_KEY")
 
 
 def verify_recaptcha(recaptcha_token: str) -> bool:
@@ -64,6 +65,7 @@ def trigger(event: dict, context: LambdaContext) -> dict:
     logger.info(f"Context: {context}")
 
     recaptcha_token = event.get("request").get("validationData").get("recaptchaToken")
+    logger.info(f"Recaptcha token: {recaptcha_token}")
 
     verification_result = verify_recaptcha(recaptcha_token)
 
