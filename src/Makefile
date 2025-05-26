@@ -71,3 +71,22 @@ create-bucket:
 init:
 	@echo ">>> Initializing project..."
 	make create-bucket
+
+
+# --- Web ---
+build:
+	@echo ">>> Building web output..."
+	npm run --prefix ./web/ build
+
+
+invalidate:
+	./.scripts/invalidate.sh
+
+upload:
+	@echo ">>> Uploading web output to S3..."
+	make build
+	./.scripts/add-bucket-policy.sh
+	./.scripts/deploy-host.sh
+
+
+PHONY: build upload deploy destroy layers env-aws env create-bucket init help

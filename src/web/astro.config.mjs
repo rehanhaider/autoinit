@@ -3,10 +3,11 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
+import config from "../config.json";
 
 // https://astro.build/config
 export default defineConfig({
-    // site: `https://${config.DOMAIN_NAME}`,
+    site: `https://${config.DOMAIN_NAME}`,
     output: "static",
     integrations: [react(), sitemap(), mdx()],
     prefetch: {
@@ -18,7 +19,7 @@ export default defineConfig({
     },
     env: {
         schema: {
-            PUBLIC_CDK_AWS_REGION: envField.string({ context: "client", access: "public" }),
+            PUBLIC_AWS_REGION: envField.string({ context: "client", access: "public" }),
             PUBLIC_USER_POOL_ID: envField.string({ context: "client", access: "public" }),
             PUBLIC_APP_CLIENT_ID: envField.string({ context: "client", access: "public" }),
             PUBLIC_BUCKET_NAME: envField.string({ context: "client", access: "public" }),
