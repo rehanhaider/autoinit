@@ -138,6 +138,7 @@ export class AuthStack extends Stack {
             generateSecret: false, // Auth handled at client side. For secure app, we need to enable this so that we can authenticate in server
             authFlows: {
                 userSrp: true, // Includes refresh tokens. No need to define explicitly
+                userPassword: true,
                 custom: true, // In case we need to add any auth challenge for secure app
             },
             oAuth: {

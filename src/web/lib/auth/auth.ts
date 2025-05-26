@@ -22,6 +22,7 @@ export class AuthService {
             const command = new InitiateAuthCommand({
                 AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
                 ClientId: CLIENT_ID,
+                // TODO: Add SRP_A and figure out how to use it
                 AuthParameters: { USERNAME: email, PASSWORD: password },
             });
 

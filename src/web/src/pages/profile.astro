@@ -1,14 +1,22 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import Navbar from "@/components/Navbar.astro";
+import Footer from "@/components/Footer.astro";
 import UserMenu from "@lib/components/UserMenu.astro";
 import ProfileForm from "@lib/components/Profile.tsx";
 ---
 
 <Layout title="Profile">
+    <header class="shadow-xl bg-base-100 z-10 relative">
+        <Navbar />
+    </header>
     <div class="flex">
         <UserMenu />
         <ProfileForm client:only="react" />
     </div>
+    <footer class="bg-neutral text-neutral-content">
+        <Footer />
+    </footer>
 </Layout>
 <script>
     import { redirectIfUnauthenticated } from "@lib/hooks/actions";
