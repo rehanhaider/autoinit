@@ -1,45 +1,43 @@
-import { App, Tags } from "aws-cdk-lib";
+import { App, StackProps, Tags } from "aws-cdk-lib";
 import { CommonStack } from "./stacks/Common";
 import { AuthStack } from "./stacks/Auth";
 import { ApiStack } from "./stacks/Api";
 import { AdminStack } from "./stacks/Admin";
+import { HostStack } from "./stacks/Host";
 
 import { PARAMS, CONSTANTS } from "./constants";
 
-const app = new App();
+const env = {
+    account: process.env.SECRET_AWS_ACCOUNT,
+    region: process.env.PUBLIC_AWS_REGION,
+};
 
+const app = new App();
 const APP_NAME = CONSTANTS.APP_NAME;
 
-const commonStack = new CommonStack(app, `${APP_NAME}-CommonStack`, {
+// Shared stack props
+const sharedProps: StackProps & { constants: typeof CONSTANTS; params: typeof PARAMS } = {
+    env,
     constants: CONSTANTS,
     params: PARAMS,
-});
+};
 
-const authStack = new AuthStack(app, `${APP_NAME}-AuthStack`, {
-    constants: CONSTANTS,
-    params: PARAMS,
-});
+// Stack instantiation
+const commonStack = new CommonStack(app, `${APP_NAME}-CommonStack`, sharedProps);
+const authStack = new AuthStack(app, `${APP_NAME}-AuthStack`, sharedProps);
+const apiStack = new ApiStack(app, `${APP_NAME}-ApiStack`, sharedProps);
+const adminStack = new AdminStack(app, `${APP_NAME}-AdminStack`, sharedProps);
+const hostStack = new HostStack(app, `${APP_NAME}-HostStack`, sharedProps);
 
-const apiStack = new ApiStack(app, `${APP_NAME}-ApiStack`, {
-    constants: CONSTANTS,
-    params: PARAMS,
-});
-
-const adminStack = new AdminStack(app, `${APP_NAME}-AdminStack`, {
-    constants: CONSTANTS,
-    params: PARAMS,
-});
-
-// Dependencies
+// Stack dependencies
 authStack.addDependency(commonStack);
 apiStack.addDependency(commonStack);
 apiStack.addDependency(authStack);
 adminStack.addDependency(commonStack);
+hostStack.addDependency(commonStack);
 
-// Tags
-Tags.of(commonStack).add("Project", APP_NAME);
-Tags.of(authStack).add("Project", APP_NAME);
-Tags.of(apiStack).add("Project", APP_NAME);
-Tags.of(adminStack).add("Project", APP_NAME);
+// Auto-tagging
+const stacks = [commonStack, authStack, apiStack, adminStack, hostStack];
+stacks.forEach((stack) => Tags.of(stack).add("Project", APP_NAME));
 
 app.synth();
