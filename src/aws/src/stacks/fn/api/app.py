@@ -55,7 +55,8 @@ def index() -> dict:
     response = requests.get("https://jsonplaceholder.typicode.com/users", timeout=30)
     logger.info("Managed to fetch data from the API")
     # This needs to be single quotes, not double quotes. Otherwise, it will throw an error @TODO: Article
-    return RESPONSE(body=response.json()[0])
+    # return RESPONSE(body=response.json()[0])
+    return RESPONSE(body={"message": "Hello World"})
 
 
 def main(event: dict, context: LambdaContext) -> dict:

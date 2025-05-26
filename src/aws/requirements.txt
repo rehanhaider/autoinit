@@ -1,4 +1,4 @@
--r src/stacks/fn/requirements.txt
+-r src/stacks/fn/api/requirements.txt
 aws-lambda-powertools
 aws-lambda-powertools[tracer]
 boto3

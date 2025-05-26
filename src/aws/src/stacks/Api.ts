@@ -58,7 +58,6 @@ export class ApiStack extends Stack {
 
         const table = dynamodb.Table.fromTableAttributes(this, `${props.constants.APP_NAME}-Table`, {
             tableName: tableName.stringValue,
-            localIndexes: ["byItemHash"],
             grantIndexPermissions: true,
         });
 
@@ -69,7 +68,7 @@ export class ApiStack extends Stack {
         const emailIdentity = ses.EmailIdentity.fromEmailIdentityName(
             this,
             `${props.constants.APP_NAME}-EmailIdentity`,
-            `${props.constants.DOMAIN_NAME}`,
+            `${props.constants.DOMAIN_NAME}`
         );
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,13 +78,13 @@ export class ApiStack extends Stack {
         const commonLayer = lambda.LayerVersion.fromLayerVersionArn(
             this,
             `${props.constants.APP_NAME}-CommonLayer`,
-            commonLayerArn.stringValue,
+            commonLayerArn.stringValue
         );
 
         const powertoolsLayer = lambda.LayerVersion.fromLayerVersionArn(
             this,
             `${props.constants.APP_NAME}-PowertoolsLayer`,
-            props.constants.ARN_POWERTOOLS_LAYER,
+            props.constants.ARN_POWERTOOLS_LAYER
         );
 
         const apiFn = new lambda.Function(this, `${props.constants.APP_NAME}-ApiHandler`, {
@@ -96,6 +95,8 @@ export class ApiStack extends Stack {
             layers: [commonLayer, powertoolsLayer],
             environment: {
                 TABLE_NAME: table.tableName,
+                PROJECT_NAME: props.constants.APP_NAME,
+                DOMAIN_NAME: props.constants.DOMAIN_NAME,
             },
         });
 
@@ -159,6 +160,7 @@ export class ApiStack extends Stack {
                 TABLE_NAME: tableName.stringValue,
                 DOMAIN_NAME: props.constants.DOMAIN_NAME,
                 EMAIL_IDENTITY_ARN: emailIdentity.emailIdentityArn,
+                PROJECT_NAME: props.constants.APP_NAME,
             },
             layers: [commonLayer, powertoolsLayer],
         });

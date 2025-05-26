@@ -20,14 +20,12 @@ import uuid
 # Boto3 imports
 import boto3
 import requests
-from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from botocore.exceptions import ClientError
 
 # ==================================================================================================
-# Global initializations
-tracer = Tracer()
-logger = Logger()
+# Module imports
+from shared.logger import logger
 
 # ==================================================================================================
 # Global declarations
@@ -35,6 +33,7 @@ CAPATCHA_CUTOFF_SCORE = 0.5
 
 DOMAIN_NAME = os.environ["DOMAIN_NAME"]
 EMAIL_IDENTITY_ARN = os.environ["EMAIL_IDENTITY_ARN"]
+PROJECT_NAME = os.environ["PROJECT_NAME"]
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(os.environ["TABLE_NAME"])
@@ -83,7 +82,7 @@ def send_email(email: str, hash_key: str) -> None:
     Send an email to the user via SES
     """
     ses.send_email(
-        FromEmailAddress=f"bootcamp@{DOMAIN_NAME}",
+        FromEmailAddress=f"waitlist@{DOMAIN_NAME}",
         FromEmailAddressIdentityArn=EMAIL_IDENTITY_ARN,
         Destination={
             "ToAddresses": [email],
@@ -91,12 +90,12 @@ def send_email(email: str, hash_key: str) -> None:
         Content={
             "Simple": {
                 "Subject": {
-                    "Data": "Welcome to the Cloud Developer Bootcamp!",
+                    "Data": f"Welcome to the {PROJECT_NAME} Waitlist!",
                     "Charset": "utf-8",
                 },
                 "Body": {
                     "Html": {
-                        "Data": f"""<p>Welcome to the Cloud Developer Bootcamp! Click here to confirm your email:&nbsp;
+                        "Data": f"""<p>Welcome to the {PROJECT_NAME} Waitlist! Click here to confirm your email:&nbsp;
                         <a href="https://{DOMAIN_NAME}/confirm?email={email}&hash={hash_key}">Confirm Email</a></p>""",
                         "Charset": "utf-8",
                     },
@@ -122,7 +121,7 @@ def add_to_waitlist(email: str) -> dict:
 
     # Store in DynamoDB
     item = {
-        "pk": "WAITLIST#BOOTCAMP#2025",
+        "pk": "WAITLIST#2025",
         "sk": email,
         "email": email,
         "confirmed": False,
@@ -168,7 +167,7 @@ def confirm_email(email: str, hash_key: str) -> dict:
     Confirm an email address
     """
     # Check if the email is in the waitlist
-    response = table.get_item(Key={"pk": "WAITLIST#BOOTCAMP#2025", "sk": email})
+    response = table.get_item(Key={"pk": "WAITLIST#2025", "sk": email})
     item = response.get("Item")
 
     if not item:
@@ -184,7 +183,7 @@ def confirm_email(email: str, hash_key: str) -> dict:
         # Update the item to set confirmed to true and remove the hash
         try:
             table.update_item(
-                Key={"pk": "WAITLIST#BOOTCAMP#2025", "sk": email},
+                Key={"pk": "WAITLIST#2025", "sk": email},
                 UpdateExpression="SET confirmed = :true REMOVE #hash",
                 ConditionExpression="confirmed = :false AND #hash = :hash",
                 ExpressionAttributeNames={"#hash": "hash"},
