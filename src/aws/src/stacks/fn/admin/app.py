@@ -11,7 +11,6 @@ import boto3
 
 # ==================================================================================================
 # Powertools imports
-from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver, CORSConfig
 from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEvent, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
