@@ -20,18 +20,15 @@ help:
 	@echo ""
 	@echo "  --- CDK Core Targets (use STACK=... to specify stack, defaults to --all) ---"
 	@echo "  deploy         Deploy specified stack(s) via CDK"
-	@echo "  hotswap        Hotswap specified stack(s) via CDK"
 	@echo "  destroy        Destroy specified stack(s) via CDK"
 	@echo ""
 	@echo "  --- Helper Scripts & Tasks ---"
 	@echo "  layers         Create Lambda layers via script"
-	@echo "  config-env     Configure/Get environment variables via script"
-	@echo "  create-user    Run create user script"
+	@echo "  env     Configure/Get environment variables via script"
 	@echo ""
 	@echo "  --- Admin Frontend ---"
 	@echo "  dev            Run admin frontend dev server"
 	@echo ""
-
 
 # --- CDK Core Targets ---
 # These targets accept the STACK variable (e.g., make deploy STACK=MyStack)
@@ -50,43 +47,12 @@ layers:
 	@echo ">>> Creating layers..."
 	./.scripts/create-layers.sh
 
-env-aws:
-	@echo ">>> Creating .env.web.local file..."
+env:
+	@echo ">>> Creating .env.*.local files..."
 	./.scripts/create-env-aws.sh
 	mise set
 
-env:
-	@echo ">>> Creating .env.*.local files..."
-	make env-aws
-	mise set
 
-
-# --- Init ---
-
-create-bucket:
-	@echo ">>> Creating bucket..."
-	./.scripts/create-bucket.sh
-
-
-init:
-	@echo ">>> Initializing project..."
-	@echo ">>> Creating bucket..."
-	make create-bucket
-	@echo ">>> Creating layers..."
-	make layers
-	@echo ">>> Deploying common stack..."
-	make deploy STACK=Common
-	@echo ">>> Setting app data..."
-	./.scripts/set-appdata.sh
-	@echo ">>> Deploying auth stack..."
-	make deploy STACK=Auth
-	@echo ">>> Deploying api stack..."
-	make deploy STACK=Api
-	@echo ">>> Create environment variables..."
-	make env
-	@echo ">>> Deploying host stack..."
-	make deploy STACK=Host
-	./.scripts/add-bucket-policy.sh
 
 # --- Web ---
 build:
@@ -104,7 +70,46 @@ upload:
 	./.scripts/deploy-host.sh
 
 
-check:
-	./.scripts/activate.sh
+# --- Mobile ---
+
+## WIP
+build-mobile:
+	@echo ">>> Building mobile output..."
+	npm run --prefix ./mobile/ build
+
+
+# --- Init ---
+
+create-bucket:
+	@echo ">>> Creating bucket..."
+	./.scripts/create-bucket.sh
+
+
+init:
+	@echo ">>> Initializing project..."
+	@echo ">>> Step 1: Creating bucket..."
+	make create-bucket
+	@echo ">>> Step 2: Creating layers..."
+	make layers
+	@echo ">>> Step 3: Deploying common stack..."
+	make deploy STACK=Common
+	@echo ">>> Step 4: Setting app data..."
+	./.scripts/set-appdata.sh
+	@echo ">>> Step 5: Deploying auth stack..."
+	make deploy STACK=Auth
+	@echo ">>> Step 6: Deploying api stack..."
+	make deploy STACK=Api
+	@echo ">>> Step 7: Create environment variables..."
+	make env
+	@echo ">>> Step 8: Deploying host stack..."
+	make deploy STACK=Host
+	./.scripts/add-bucket-policy.sh
+	@echo ">>> Step 9: Building web output..."
+	make build
+	@echo ">>> Step 10: Uploading web output to S3..."
+	make upload && make invalidate
+
+
+
 
 PHONY: build upload deploy destroy layers env-aws env create-bucket init help
