@@ -17,9 +17,10 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
-    "python.envFile": "${workspaceFolder}/.env",
+    "python.envFile": "${workspaceFolder}/src/.env",
     "python.analysis.extraPaths": ["src/aws/src/stacks"],
     "terminal.integrated.env.linux": {
         "PYTHONPATH": "${workspaceFolder}/src/aws/src/stacks"
-    }
+    },
+    "python.analysis.inlayHints.functionReturnTypes": false
 }

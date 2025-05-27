@@ -2,6 +2,18 @@
 shopt -s expand_aliases
 alias echo="echo -e"
 
+
+# Check if the virtual environment exists
+if [ -f .env/bin/activate ]; then
+    echo "Activating virtual environment"
+    source .env/bin/activate
+else
+    echo "Virtual environment not found"
+    python3.12 -m venv .env
+    source .env/bin/activate
+fi
+
+
 # Layers directory
 LAYERS_DIR=.layers
 # Main requirements file

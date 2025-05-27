@@ -72,6 +72,8 @@ init:
 	@echo ">>> Initializing project..."
 	@echo ">>> Creating bucket..."
 	make create-bucket
+	@echo ">>> Creating layers..."
+	make layers
 	@echo ">>> Deploying common stack..."
 	make deploy STACK=Common
 	@echo ">>> Setting app data..."
@@ -101,5 +103,8 @@ upload:
 	./.scripts/add-bucket-policy.sh
 	./.scripts/deploy-host.sh
 
+
+check:
+	./.scripts/activate.sh
 
 PHONY: build upload deploy destroy layers env-aws env create-bucket init help
