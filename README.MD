@@ -18,14 +18,11 @@
 
 ### Create recaptcha keys
 
-1. Go to https://console.cloud.google.com/security/recaptcha
-2. Select the right project
-3. Click on `Create key`
-4. Enter a `Display name`
-5. Choose the Application type `Web` or `Android` or `IOS`
-6. Enter the `Domain` - `http://localhost:4321`, `https://domain.com`, `https://www.domain.com`
-7. Click on `Create key` button
-8. Copy the ID and paste it in the `.env.web.local` file as `PUBLIC_RECAPTCHA_CLIENT_KEY`
-9. Then in the console, click on `Integration`
-10. Click on `Integrate with a third-party service`
-11. Copy the Secret and paste it in the `.env.web.local` file as `SECRET_RECAPTCHA_SECRET_KEY`
+1. Go to https://www.google.com/recaptcha/admin/create
+2. Choose a Label
+3. reCAPTCHA Type - choose `reCAPTCHA v3`
+4. Add domain - `http://localhost:4321`, `https://domain.com`, `https://www.domain.com`
+5. Under Google Cloud Platform Project - choose an existing project or create a new one
+6. Click on Submit button
+7. Copy the `Site key` and paste it in the `.env.web.local` file as `PUBLIC_RECAPTCHA_CLIENT_KEY`
+8. Copy the `Secret key` and paste it in the `.env.web.local` file as `SECRET_RECAPTCHA_SECRET_KEY`
