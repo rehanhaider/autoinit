@@ -55,6 +55,11 @@ env:
 
 
 # --- Web ---
+
+dev:
+	@echo ">>> Running admin frontend dev server..."
+	npm run --prefix ./web/ dev
+
 build-web:
 	@echo ">>> Building web output..."
 	npm run --prefix ./web/ build
@@ -113,4 +118,4 @@ init:
 
 
 
-PHONY: build upload deploy destroy layers env-aws env create-bucket init help
+PHONY: build upload deploy destroy layers env-aws env create-bucket init help dev build-web invalidate
