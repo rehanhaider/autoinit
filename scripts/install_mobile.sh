@@ -1,9 +1,15 @@
 #!/bin/bash
 
-## --- Create the mobile directory ---
-INFO "Creating the mobile directory"
-mkdir -p "${CURRENT_DIR}/mobile" || {
-    ERROR "Failed to create the mobile directory"
-    exit 1
+# --- Copy the files ---
+SILENT_MODE=$ORIGINAL_SILENT_MODE
+PROMPT "copy the files" "cp -r ${MODULES_DIR}/mobile ${TARGET_DIR}/mobile"
+
+
+# --- Install the requirements ---
+init_cdk_project() {
+    cd ${TARGET_DIR}/mobile
+    RUN "Configuring npm project..." "source ${SCRIPT_DIR}/mobile/npm-config.sh"
+    cd ${TARGET_DIR}
 }
-PASS "Mobile directory created successfully"
+
+PROMPT "cdk project initialization" "init_cdk_project"

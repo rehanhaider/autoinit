@@ -64,7 +64,7 @@ source "${SCRIPT_DIR}/global.sh"
 MODULES=(
     "aws"
     "web"
-    # "mobile"
+    "mobile"
     # "admin"
 )
 
