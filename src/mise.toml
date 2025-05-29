@@ -3,4 +3,4 @@ python = "3.12"
 
 
 [env]
-_.file = ['.env.web.local', '.env.aws.local']
+_.file = ['.env.web.local', '.env.aws.local', 'env.cdk.local']

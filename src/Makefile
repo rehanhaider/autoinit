@@ -1,5 +1,5 @@
 # Default stack target for CDK commands (use --all for clarity)
-PROJECT ?= MyProject
+PROJECT ?= AutoSocial
 STACK ?= --all
 
 # Construct full stack name based on STACK variable
@@ -47,10 +47,20 @@ layers:
 	@echo ">>> Creating layers..."
 	./.scripts/create-layers.sh
 
-env:
+env-cdk:
+	@echo ">>> Creating .env.cdk.local files..."
+	./.scripts/create-env-cdk.sh
+	mise set
+
+env-aws:
 	@echo ">>> Creating .env.*.local files..."
 	./.scripts/create-env-aws.sh
 	mise set
+
+env:
+	@echo ">>> Creating .env.*.local files..."
+	make env-cdk
+	make env-aws
 
 
 
@@ -60,7 +70,7 @@ dev:
 	@echo ">>> Running admin frontend dev server..."
 	npm run --prefix ./web/ dev
 
-build-web:
+build:
 	@echo ">>> Building web output..."
 	npm run --prefix ./web/ build
 
@@ -97,25 +107,27 @@ init:
 	make create-bucket
 	@echo ">>> Step 2: Creating layers..."
 	make layers
-	@echo ">>> Step 3: Deploying common stack..."
+	@echo ">>> Step 3: Creating .env.cdk.local files..."
+	make env-cdk
+	@echo ">>> Step 4: Deploying common stack..."
 	make deploy STACK=Common
-	@echo ">>> Step 4: Setting app data..."
+	@echo ">>> Step 5: Setting app data..."
 	./.scripts/set-appdata.sh
-	@echo ">>> Step 5: Deploying auth stack..."
+	@echo ">>> Step 6: Deploying auth stack..."
 	make deploy STACK=Auth
-	@echo ">>> Step 6: Deploying api stack..."
+	@echo ">>> Step 7: Deploying api stack..."
 	make deploy STACK=Api
-	@echo ">>> Step 7: Create environment variables..."
+	@echo ">>> Step 8: Create environment variables..."
 	make env
-	@echo ">>> Step 8: Deploying host stack..."
+	@echo ">>> Step 9: Deploying host stack..."
 	make deploy STACK=Host
 	./.scripts/add-bucket-policy.sh
-	@echo ">>> Step 9: Building web output..."
+	@echo ">>> Step 10: Building web output..."
 	make build
-	@echo ">>> Step 10: Uploading web output to S3..."
+	@echo ">>> Step 11: Uploading web output to S3..."
 	make upload && make invalidate
 
 
 
 
-PHONY: build upload deploy destroy layers env-aws env create-bucket init help dev build-web invalidate
+PHONY: build upload deploy destroy layers env-aws env create-bucket init help dev invalidate
