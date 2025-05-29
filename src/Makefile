@@ -55,7 +55,7 @@ env:
 
 
 # --- Web ---
-build:
+build-web:
 	@echo ">>> Building web output..."
 	npm run --prefix ./web/ build
 
@@ -75,7 +75,8 @@ upload:
 ## WIP
 build-mobile:
 	@echo ">>> Building mobile output..."
-	npm run --prefix ./mobile/ build
+	cd mobile && npx expo prebuild
+	cd mobile/android && ./gradlew assembleRelease
 
 
 # --- Init ---

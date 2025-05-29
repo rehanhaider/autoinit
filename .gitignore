@@ -8,3 +8,8 @@ cdk.context.json
 
 # Remove virtual environment
 .env/
+
+
+# Remove mobile output
+src/mobile/android
+src/mobile/ios
