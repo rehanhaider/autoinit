@@ -71,3 +71,4 @@ Thumbs.db
 
 # CDK Specific
 .layers
+cdk.context.json
