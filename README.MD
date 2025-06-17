@@ -15,6 +15,7 @@
 7. Ensure `Publish DNS records to Route53` is checked
 8. Ensure `DKIM signatures` is checked
 9. Click on `Create identity` button
+10. Add the DKIM Verification keys to Route53 / your domain provider
 
 ### Create recaptcha keys
 
